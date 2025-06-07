@@ -15,6 +15,7 @@ export default function Home() {
     isBalanceLoading,
     isBalanceError,
     deposit,
+    withdraw,
     grabRedPacket,
   } = UseRedPacket();
   const [amount, setAmount] = useState<string | number>('');
@@ -33,6 +34,7 @@ export default function Home() {
             setAmount(Number(e.target.value));
           }} type="text" />
           <Button onClick={() => { deposit(BigInt(amount)) }}>充值</Button>
+          <Button onClick={() => { withdraw() }}>全部提现</Button>
         </div>
         <div className="flex justify-start items-center gap-4">
           <Button onClick={() => { grabRedPacket() }}>抢红包</Button>

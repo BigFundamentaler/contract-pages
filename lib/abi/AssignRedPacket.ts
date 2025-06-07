@@ -1,5 +1,5 @@
 
-export const AssignRedPacketAddress = "0xB2bbE649A9B9E946bBCCA3dd84F970c7664cF346"
+export const AssignRedPacketAddress = "0x6F0AF3Bdd53A55cc0dCeAD7dC80137EC0bF84223"
 export const AssignRedPacketAbi = {
     "contractName": "AssignRedPacket",
     "abi": [
