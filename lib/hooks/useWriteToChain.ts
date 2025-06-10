@@ -1,6 +1,6 @@
 import { parseEther } from 'viem'
 import { AssignRedPacketAddress, AssignRedPacketAbi } from "@/lib/abi/AssignRedPacket";
-import { useAccount, useBalance, useWatchBlockNumber, useSendTransaction, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useBalance, useWatchBlockNumber, useSendTransaction, useReadContract, useWriteContract, useWaitForTransactionReceipt, useTransaction } from "wagmi";
 import { useState } from 'react';
 
 export function UseWriteToChain() {
@@ -41,6 +41,13 @@ export function UseWriteToChain() {
     } = useWaitForTransactionReceipt({
         hash: transhHash,
     });
+    // 获取交易信息
+    const {data:tx,status:finalStatus} = useTransaction({
+        hash: transhHash,
+        query: {
+            enabled: !!transhHash,
+        }
+    })
     return {
         accountBalance,
         isSending,
@@ -51,6 +58,8 @@ export function UseWriteToChain() {
         isConfirmed,
         confirmError,
         receipt,
+        tx,
+        finalStatus,
         sendToZeroAddress
     };
 }

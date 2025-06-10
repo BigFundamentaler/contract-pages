@@ -9,6 +9,27 @@ import {
   UseWriteToChain,
 } from "@/lib/hooks/useWriteToChain";
 import { spanish } from "viem/accounts";
+const serializeBigInt = (obj: any): any => {
+  if (obj === null || obj === undefined) return obj;
+  
+  if (typeof obj === 'bigint') {
+    return obj.toString();
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(serializeBigInt);
+  }
+  
+  if (typeof obj === 'object') {
+    const serialized: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      serialized[key] = serializeBigInt(value);
+    }
+    return serialized;
+  }
+  
+  return obj;
+};
 export default function Home() {
 
   const {
@@ -21,6 +42,8 @@ export default function Home() {
     isConfirmed,
     confirmError,
     receipt,
+    tx,
+    finalStatus,
     transhHash,
   } = UseWriteToChain();
   const getCurrentStage = () => {
@@ -60,6 +83,13 @@ export default function Home() {
           {isError && <span>交易失败</span>} */}
           当前状态：{getCurrentStage()}
         </div>
+        {finalStatus === 'success' && <div>
+          <div>交易信息：</div>
+          <div>form：{tx?.from}</div>
+          <div>to：{tx?.to}</div>
+          <div>value：{tx?.value}</div>
+          <div>input-data：{tx?.input}</div>
+        </div>}
       </main>
     </div>
   );
