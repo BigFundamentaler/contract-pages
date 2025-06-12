@@ -11,15 +11,15 @@ import {
 import { spanish } from "viem/accounts";
 const serializeBigInt = (obj: any): any => {
   if (obj === null || obj === undefined) return obj;
-  
+
   if (typeof obj === 'bigint') {
     return obj.toString();
   }
-  
+
   if (Array.isArray(obj)) {
     return obj.map(serializeBigInt);
   }
-  
+
   if (typeof obj === 'object') {
     const serialized: any = {};
     for (const [key, value] of Object.entries(obj)) {
@@ -27,7 +27,7 @@ const serializeBigInt = (obj: any): any => {
     }
     return serialized;
   }
-  
+
   return obj;
 };
 export default function Home() {
@@ -45,6 +45,9 @@ export default function Home() {
     tx,
     finalStatus,
     transhHash,
+    graphData,
+    graphStatus,
+    graphRefetch,
   } = UseWriteToChain();
   const getCurrentStage = () => {
     if (isConfirmed) return "上链成功";
@@ -89,6 +92,39 @@ export default function Home() {
           <div>to：{tx?.to}</div>
           <div>value：{tx?.value}</div>
           <div>input-data：{tx?.input}</div>
+        </div>}
+        <div>
+          <Button onClick={() => { graphRefetch() }}>通过graph查询交易信息</Button>
+        </div>
+        {!!(graphData) === true && <div>
+          <div>
+            <div>最新充值信息</div>
+            <div>
+              {(graphData as any).deposits.map((item: any) => (
+                <div key={item.id}>
+                  <div>区块号：{item.blockNumber}</div>
+                  <div>用户：{item.user}</div>
+                  <div>金额：{item.amount}</div>
+                  <div>--------------------------</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div>最新转账信息</div>
+            <div>
+              {(graphData as any).transfers.map((item: any) => (
+                <div key={item.id}>
+                  <div>区块号：{item.blockNumber}</div>
+                  <div>From：{item.from}</div>
+                  <div>To：{item.to}</div>
+                  <div>金额：{item.amount}</div>
+                  <div>转账消息：{item.message}</div>
+                  <div>--------------------------</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>}
       </main>
     </div>

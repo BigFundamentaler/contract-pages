@@ -1,6 +1,7 @@
 import { parseEther } from 'viem'
-import { AssignRedPacketAddress, AssignRedPacketAbi } from "@/lib/abi/AssignRedPacket";
-import { useAccount, useBalance, useWatchBlockNumber, useSendTransaction, useReadContract, useWriteContract, useWaitForTransactionReceipt, useTransaction } from "wagmi";
+import { useQuery } from '@tanstack/react-query';
+import { gql, request } from 'graphql-request'
+import { useAccount, useBalance, useWatchBlockNumber, useSendTransaction, useWaitForTransactionReceipt, useTransaction } from "wagmi";
 import { useState } from 'react';
 
 export function UseWriteToChain() {
@@ -42,11 +43,38 @@ export function UseWriteToChain() {
         hash: transhHash,
     });
     // 获取交易信息
-    const {data:tx,status:finalStatus} = useTransaction({
+    const { data: tx, status: finalStatus } = useTransaction({
         hash: transhHash,
         query: {
             enabled: !!transhHash,
         }
+    })
+
+    const query = gql`{
+        deposits(first: 5) {
+          id
+          user
+          amount
+          blockNumber
+        }
+        transfers(first: 5) {
+          id
+          blockNumber
+          from
+          to
+          amount
+          message
+        }
+      }`
+    const url = 'https://api.studio.thegraph.com/query/113645/test-simple-wallet/version/latest'
+    const apiKey = '767933a5e7845970bb38a23f0a07787d'
+    const headers = { Authorization: `Bearer ${apiKey}` }
+    const { data:graphData, status:graphStatus,refetch: graphRefetch } = useQuery({
+        queryKey: ['data'],
+        async queryFn() {
+            return await request(url, query, {}, headers)
+        },
+        enabled: false,
     })
     return {
         accountBalance,
@@ -60,6 +88,9 @@ export function UseWriteToChain() {
         receipt,
         tx,
         finalStatus,
+        graphData,
+        graphStatus,
+        graphRefetch,
         sendToZeroAddress
     };
 }
